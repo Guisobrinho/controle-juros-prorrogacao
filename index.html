@@ -6,13 +6,14 @@
   <title>Lançamentos - Juros & Prorrogação</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- Google Fonts: Inter -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   
   <script>
-    // Configuração do Tailwind para dar suporte ao modo escuro via classe
     tailwind.config = {
       darkMode: 'class',
       theme: {
@@ -35,7 +36,6 @@
   </script>
 
   <style>
-    /* Estilos para impressão limpa e formatação em PDF */
     @media print {
       body * {
         visibility: hidden !important;
@@ -44,7 +44,6 @@
         visibility: visible !important;
       }
       #printArea {
-        display: block !important;
         position: absolute !important;
         left: 0 !important;
         top: 0 !important;
@@ -65,7 +64,6 @@
       display: none;
     }
 
-    /* Animações suaves de transição */
     * {
       transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
     }
@@ -77,7 +75,6 @@
   <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-30 no-print shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       
-      <!-- LOGO E TÍTULO -->
       <div class="flex items-center gap-3">
         <div class="bg-brand-600 text-white p-2.5 rounded-xl flex items-center justify-center shadow-md">
           <i class="fa-solid me-0.5 fa-calculator text-lg"></i>
@@ -88,14 +85,12 @@
         </div>
       </div>
 
-      <!-- AÇÕES DO CABEÇALHO (NOVO LANÇAMENTO & TEMA) -->
       <div class="flex items-center gap-3">
         <button id="btnOpenModal" onclick="openModal()" class="bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-md hover:shadow-lg flex items-center gap-2 transition active:scale-95">
           <i class="fa-solid fa-plus"></i>
           <span class="hidden sm:inline">Novo Lançamento</span>
         </button>
 
-        <!-- Botão de Alternar Modo Escuro / Claro -->
         <button id="themeToggle" onclick="toggleTheme()" class="p-2.5 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-700 transition" title="Alternar Modo Escuro/Claro">
           <i id="themeIcon" class="fa-solid fa-moon text-lg"></i>
         </button>
@@ -107,17 +102,15 @@
   <!-- CONTEÚDO PRINCIPAL -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full">
     
-    <!-- CABEÇALHO EXCLUSIVO PARA IMPRESSÃO -->
     <div class="print-only mb-6 text-center border-b pb-4">
       <h1 class="text-2xl font-bold">Relatório de Lançamentos - Juros & Prorrogação</h1>
       <p class="text-sm text-gray-600">Impresso em: <span id="printDate"></span></p>
     </div>
 
-    <!-- CARDS DE RESUMO (TOTAIS) -->
+    <!-- CARDS DE RESUMO -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
       
-      <!-- Card Valor Total -->
-      <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm print-shadow-none">
+      <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm">
         <div class="flex items-center justify-between mb-2">
           <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Valor Total Filtrado</span>
           <div class="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400 flex items-center justify-center">
@@ -128,8 +121,7 @@
         <p class="text-xs text-gray-500 dark:text-gray-400 mt-1" id="totalCountText">0 lançamentos encontrados</p>
       </div>
 
-      <!-- Card Média/Valor Diário -->
-      <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm print-shadow-none">
+      <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm">
         <div class="flex items-center justify-between mb-2">
           <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Total / Média por Dia</span>
           <div class="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center">
@@ -140,8 +132,7 @@
         <p class="text-xs text-gray-500 dark:text-gray-400 mt-1" id="dailyCountText">Baseado em 0 dia(s) ativo(s)</p>
       </div>
 
-      <!-- Card Categoria Ativa / Status -->
-      <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm print-shadow-none">
+      <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm">
         <div class="flex items-center justify-between mb-2">
           <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Filtro Ativo</span>
           <div class="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 flex items-center justify-center">
@@ -157,8 +148,7 @@
     <!-- CONTROLES DE FILTROS E BUSCA -->
     <div class="bg-white dark:bg-gray-800 p-4 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm mb-6 no-print space-y-4">
       
-      <!-- ABAS DE CATEGORIA -->
-      <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin">
+      <div class="flex items-center gap-2 overflow-x-auto pb-2">
         <button onclick="setCategoryFilter('all')" data-cat="all" class="cat-btn px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap bg-brand-600 text-white shadow-sm transition">
           📁 Todos
         </button>
@@ -176,10 +166,8 @@
         </button>
       </div>
 
-      <!-- LUPA DE BUSCA E AÇÕES -->
       <div class="flex flex-col sm:flex-row items-center gap-3 pt-2 border-t border-gray-100 dark:border-gray-700">
         
-        <!-- Campo de Pesquisa com Lupa -->
         <div class="relative w-full sm:flex-1">
           <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
             <i class="fa-solid fa-magnifying-glass"></i>
@@ -187,7 +175,6 @@
           <input type="text" id="searchInput" oninput="renderData()" placeholder="Buscar por descrição, valor ou data..." class="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-white placeholder-gray-400">
         </div>
 
-        <!-- Botões de Ação de Relatório -->
         <div class="flex items-center gap-2 w-full sm:w-auto">
           <button onclick="openReportPreview()" class="w-full sm:w-auto px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-medium text-sm rounded-xl flex items-center justify-center gap-2 shadow-sm transition">
             <i class="fa-solid fa-eye"></i>
@@ -204,10 +191,8 @@
 
     </div>
 
-    <!-- TABELA / LISTAGEM DE REGISTROS -->
-    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden print-shadow-none">
-      
-      <!-- Container com rolagem para mobile -->
+    <!-- TABELA -->
+    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
       <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse">
           <thead>
@@ -220,34 +205,26 @@
             </tr>
           </thead>
           <tbody id="dataTableBody" class="divide-y divide-gray-200 dark:divide-gray-700 text-sm">
-            <!-- As linhas serão inseridas dinamicamente via JS -->
+            <!-- Injetado via JS -->
           </tbody>
         </table>
       </div>
 
-      <!-- MENSAGEM QUANDO NÃO HÁ REGISTROS -->
       <div id="emptyState" class="hidden py-12 text-center">
         <div class="w-16 h-16 bg-gray-100 dark:bg-gray-700 text-gray-400 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">
           <i class="fa-solid fa-folder-open"></i>
         </div>
         <p class="text-gray-500 dark:text-gray-400 font-medium">Nenhum lançamento encontrado.</p>
-        <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Tente mudar o filtro de busca ou adicione um novo registro.</p>
       </div>
-
     </div>
 
   </main>
 
-  <!-- AREA OCULTA EXCLUSIVA PARA IMPRESSÃO DIRETA -->
-  <div id="printArea" class="hidden">
-    <!-- Conteúdo gerado dinamicamente para impressão -->
-  </div>
+  <div id="printArea" class="hidden"></div>
 
-  <!-- MODAL DE VISUALIZAÇÃO DE RELATÓRIO PRE-IMPRESSÃO -->
+  <!-- MODAL DE RELATÓRIO -->
   <div id="reportPreviewModal" class="fixed inset-0 z-50 hidden bg-gray-900/70 backdrop-blur-sm flex items-center justify-center p-4 no-print">
     <div class="bg-white text-gray-900 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden border border-gray-200">
-      
-      <!-- Cabeçalho do Modal de Preview -->
       <div class="px-6 py-4 bg-gray-100 border-b border-gray-200 flex items-center justify-between">
         <div class="flex items-center gap-2">
           <i class="fa-solid fa-file-invoice text-brand-600 text-xl"></i>
@@ -257,50 +234,33 @@
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
-
-      <!-- Conteúdo do Documento que será Impresso -->
-      <div class="p-8 overflow-y-auto flex-grow bg-white" id="modalReportContent">
-        <!-- Gerado via JavaScript -->
-      </div>
-
-      <!-- Rodapé das ações do Modal -->
+      <div class="p-8 overflow-y-auto flex-grow bg-white" id="modalReportContent"></div>
       <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex items-center justify-end gap-3">
-        <button onclick="closeReportPreview()" class="px-4 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm font-medium rounded-xl transition">
-          Fechar
-        </button>
+        <button onclick="closeReportPreview()" class="px-4 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm font-medium rounded-xl transition">Fechar</button>
         <button onclick="triggerPrintFromPreview()" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold rounded-xl shadow-md flex items-center gap-2 transition">
-          <i class="fa-solid fa-print"></i>
-          <span>Imprimir Agora</span>
+          <i class="fa-solid fa-print"></i><span>Imprimir Agora</span>
         </button>
       </div>
-
     </div>
   </div>
 
-  <!-- MODAL DE CADASTRO / EDIÇÃO -->
+  <!-- MODAL DE CADASTRO -->
   <div id="entryModal" class="fixed inset-0 z-50 hidden bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4 no-print">
-    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-lg overflow-hidden transform transition-all border border-gray-200 dark:border-gray-700">
-      
-      <!-- Modal Header -->
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-lg overflow-hidden border border-gray-200 dark:border-gray-700">
       <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between bg-gray-50 dark:bg-gray-800/50">
         <h3 id="modalTitle" class="font-bold text-lg text-gray-900 dark:text-white flex items-center gap-2">
-          <i class="fa-solid fa-pen-to-square text-brand-600"></i>
-          <span>Novo Lançamento</span>
+          <i class="fa-solid fa-pen-to-square text-brand-600"></i><span>Novo Lançamento</span>
         </h3>
         <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-lg transition">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
 
-      <!-- Modal Form -->
       <form id="entryForm" onsubmit="handleFormSubmit(event)" class="p-6 space-y-4">
         <input type="hidden" id="entryId">
 
-        <!-- Campo Data -->
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">
-            Data (DD/MM/AAAA) <span class="text-red-500">*</span>
-          </label>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Data (DD/MM/AAAA) <span class="text-red-500">*</span></label>
           <div class="relative">
             <input type="text" id="inputDate" placeholder="DD/MM/AAAA" required class="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-white">
             <input type="date" id="nativeDatePicker" onchange="syncNativeDateToText(this)" class="absolute right-2 top-2 opacity-0 w-8 h-8 cursor-pointer">
@@ -308,14 +268,10 @@
               <i class="fa-solid fa-calendar-days"></i>
             </button>
           </div>
-          <span class="text-[11px] text-gray-400">Aceita digitação rápida em formato DD/MM/AA ou seletor.</span>
         </div>
 
-        <!-- Campo Categoria -->
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">
-            Categoria <span class="text-red-500">*</span>
-          </label>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Categoria <span class="text-red-500">*</span></label>
           <select id="inputCategory" required class="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-white">
             <option value="01">🏛️ 01 Impostos</option>
             <option value="02">📋 02 Administrativos</option>
@@ -324,136 +280,159 @@
           </select>
         </div>
 
-        <!-- Campo Valor -->
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">
-            Valor (R$) <span class="text-red-500">*</span>
-          </label>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Valor (R$) <span class="text-red-500">*</span></label>
           <input type="text" id="inputValue" placeholder="0,00" required oninput="formatCurrencyInput(this)" class="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-white font-semibold">
         </div>
 
-        <!-- Campo Descrição / Histórico -->
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">
-            Descrição / Histórico
-          </label>
-          <textarea id="inputDescription" rows="2" placeholder="Ex: Prorrogação boleto IPTU - Juros de mora" class="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-white"></textarea>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Descrição / Histórico</label>
+          <textarea id="inputDescription" rows="2" placeholder="Ex: Prorrogação boleto IPTU" class="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-white"></textarea>
         </div>
 
-        <!-- Modal Footer Buttons -->
         <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
-          <button type="button" onclick="closeModal()" class="px-4 py-2.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 text-sm font-medium rounded-xl transition">
-            Cancelar
-          </button>
-          <button type="submit" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold rounded-xl shadow-md transition">
-            Salvar Lançamento
-          </button>
+          <button type="button" onclick="closeModal()" class="px-4 py-2.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 text-sm font-medium rounded-xl transition">Cancelar</button>
+          <button type="submit" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold rounded-xl shadow-md transition">Salvar Lançamento</button>
         </div>
-
       </form>
     </div>
   </div>
 
-  <!-- CAIXA DE NOTIFICAÇÃO (TOAST ALERTS NATIVOS, SEM ALERT) -->
+  <!-- TOAST -->
   <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
     <div class="bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 text-sm font-medium border border-gray-700 dark:border-gray-200">
       <i id="toastIcon" class="fa-solid fa-circle-check text-green-400 dark:text-green-600"></i>
-      <span id="toastMessage">Operação realizada com sucesso!</span>
+      <span id="toastMessage">Operação realizada!</span>
     </div>
   </div>
 
-  <!-- RODAPÉ -->
-  <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-4 no-print mt-auto">
-    <div class="max-w-7xl mx-auto px-4 text-center text-xs text-gray-500 dark:text-gray-400">
-      &copy; Sistema de Controle de Juros e Prorrogação - Prontidão para Supabase
-    </div>
-  </footer>
-
-  <!-- LÓGICA E SCRIPT PRINCIPAL DA APLICAÇÃO -->
+  <!-- SCRIPT INTEGRADO COM SUPABASE -->
   <script>
-    /* -------------------------------------------------------------------------- */
-    /* CONFIGURAÇÃO E DADOS INICIAIS                                              */
-    /* -------------------------------------------------------------------------- */
-    
-    // Mapeamento visual das Categorias
-    const CATEGORIES = {
-      '01': { name: '01 Impostos', emoji: '🏛️', code: '01' },
-      '02': { name: '02 Administrativos', emoji: '📋', code: '02' },
-      '03': { name: '03 Tarifas bancarias', emoji: '🏦', code: '03' },
-      '04': { name: '04 Outros', emoji: '📌', code: '04' }
-    };
+    // ==========================================
+    // ⚙️ INSIRA SUAS CREDENCIAIS DO SUPABASE AQUI:
+    // ==========================================
+    const SUPABASE_URL = 'SUA_PROJECT_URL_AQUI';       // Ex: https://xxxxxx.supabase.co
+    const SUPABASE_ANON_KEY = 'SUA_ANON_KEY_AQUI';    // Chave anon longa eyJ...
+    // ==========================================
 
-    // Dados de exemplo caso LocalStorage esteja vazio
-    const DEMO_DATA = [
-      { id: '1', date: '02/11/2026', category: '01', value: 145.80, description: 'Juros prorrogação DARF IRPJ' },
-      { id: '2', date: '02/11/2026', category: '03', value: 38.50, description: 'Tarifa de prorrogação de título Itaú' },
-      { id: '3', date: '03/11/2026', category: '02', value: 210.00, description: 'Taxa administrativa prorrogação aluguel' },
-      { id: '4', date: '03/11/2026', category: '04', value: 85.20, description: 'Multa e juros prorrogação fornecedor' }
-    ];
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const CATEGORIES = {
+      '01': { name: '01 Impostos', emoji: '🏛️' },
+      '02': { name: '02 Administrativos', emoji: '📋' },
+      '03': { name: '03 Tarifas bancarias', emoji: '🏦' },
+      '04': { name: '04 Outros', emoji: '📌' }
+    };
 
     let entries = [];
     let currentFilterCategory = 'all';
 
-    /* -------------------------------------------------------------------------- */
-    /* INICIALIZAÇÃO DA PÁGINA                                                   */
-    /* -------------------------------------------------------------------------- */
-
     window.onload = function() {
       loadTheme();
-      loadEntries();
+      loadEntriesFromSupabase();
       setCurrentDateInPrint();
     };
 
     function setCurrentDateInPrint() {
-      const today = new Date();
-      document.getElementById('printDate').innerText = today.toLocaleDateString('pt-BR');
+      document.getElementById('printDate').innerText = new Date().toLocaleDateString('pt-BR');
     }
 
-    /* -------------------------------------------------------------------------- */
-    /* GERENCIAMENTO DE REQUISIÇÕES / PERSISTÊNCIA (PREPARADO PARA SUPABASE)     */
-    /* -------------------------------------------------------------------------- */
+    // Carregar dados da nuvem do Supabase
+    async function loadEntriesFromSupabase() {
+      const { data, error } = await supabaseClient
+        .from('lancamentos')
+        .select('*');
 
-    // Carrega registros (Local Storage com transição limpa para Supabase)
-    async function loadEntries() {
-      /* 
-        ========================================================================
-        ESTRUTURA DE INTEGRAÇÃO SUPABASE (FUTURO):
-        
-        const { data, error } = await supabase.from('lançamentos').select('*');
-        if (!error) { entries = data; }
-        ========================================================================
-      */
-      
-      const stored = localStorage.getItem('juros_entries');
-      if (stored) {
-        try {
-          entries = JSON.parse(stored);
-        } catch (e) {
-          entries = DEMO_DATA;
-        }
+      if (error) {
+        console.error('Erro ao buscar do Supabase:', error);
+        showToast('Erro ao carregar dados da nuvem.', 'error');
+        entries = [];
       } else {
-        entries = DEMO_DATA;
-        saveEntriesToStorage();
+        entries = data || [];
       }
       renderData();
     }
 
-    function saveEntriesToStorage() {
-      localStorage.setItem('juros_entries', JSON.stringify(entries));
+    async function handleFormSubmit(e) {
+      e.preventDefault();
+
+      const id = document.getElementById('entryId').value;
+      const dateRaw = document.getElementById('inputDate').value.trim();
+      const category = document.getElementById('inputCategory').value;
+      const valueRaw = document.getElementById('inputValue').value;
+      const description = document.getElementById('inputDescription').value.trim();
+
+      const formattedDate = parseAndNormalizeDate(dateRaw);
+      if (!formattedDate) {
+        showToast('Informe uma data válida (ex: 15/10/2026).', 'error');
+        return;
+      }
+
+      const numericValue = parseCurrency(valueRaw);
+      if (isNaN(numericValue) || numericValue <= 0) {
+        showToast('Informe um valor válido maior que zero.', 'error');
+        return;
+      }
+
+      if (id) {
+        // Atualizar no Supabase
+        const { error } = await supabaseClient
+          .from('lancamentos')
+          .update({ date: formattedDate, category, value: numericValue, description })
+          .eq('id', id);
+
+        if (error) {
+          showToast('Erro ao atualizar na nuvem.', 'error');
+        } else {
+          showToast('Lançamento atualizado com sucesso!');
+        }
+      } else {
+        // Inserir Novo no Supabase
+        const newRecord = {
+          id: Date.now().toString(),
+          date: formattedDate,
+          category,
+          value: numericValue,
+          description
+        };
+
+        const { error } = await supabaseClient
+          .from('lancamentos')
+          .insert([newRecord]);
+
+        if (error) {
+          showToast('Erro ao salvar no Supabase.', 'error');
+          console.error(error);
+        } else {
+          showToast('Lançamento cadastrado na nuvem!');
+        }
+      }
+
+      closeModal();
+      loadEntriesFromSupabase();
     }
 
-    /* -------------------------------------------------------------------------- */
-    /* RENDERIZAÇÃO E FILTRAGEM DE DADOS                                          */
-    /* -------------------------------------------------------------------------- */
+    async function deleteEntry(id) {
+      if (!confirm('Deseja realmente excluir este lançamento?')) return;
+
+      const { error } = await supabaseClient
+        .from('lancamentos')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        showToast('Erro ao excluir registro.', 'error');
+      } else {
+        showToast('Lançamento removido com sucesso.');
+        loadEntriesFromSupabase();
+      }
+    }
 
     function renderData() {
       const tbody = document.getElementById('dataTableBody');
       const emptyState = document.getElementById('emptyState');
-      const searchVal = document.getElementById('searchInput').value.toLowerCase().trim();
-
       tbody.innerHTML = '';
 
-      // Aplica filtros de Categoria e Pesquisa por Lupa
       const filtered = getFilteredData();
 
       if (filtered.length === 0) {
@@ -467,28 +446,18 @@
           row.className = 'hover:bg-gray-50 dark:hover:bg-gray-700/30 transition';
 
           row.innerHTML = `
-            <td class="py-3.5 px-4 font-medium text-gray-900 dark:text-gray-100 whitespace-nowrap">
-              ${item.date}
-            </td>
+            <td class="py-3.5 px-4 font-medium text-gray-900 dark:text-gray-100 whitespace-nowrap">${item.date}</td>
             <td class="py-3.5 px-4 whitespace-nowrap">
               <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
-                <span class="mr-1.5">${catInfo.emoji}</span> ${catInfo.name}
+                <span class="mr-1.5">${catInfo.emoji}</span> ${catInfo.name || item.category}
               </span>
             </td>
-            <td class="py-3.5 px-4 text-gray-600 dark:text-gray-300 max-w-xs sm:max-w-md truncate">
-              ${escapeHTML(item.description || '-')}
-            </td>
-            <td class="py-3.5 px-4 text-right font-bold text-gray-900 dark:text-white whitespace-nowrap">
-              R$ ${formatMoney(item.value)}
-            </td>
+            <td class="py-3.5 px-4 text-gray-600 dark:text-gray-300 max-w-xs sm:max-w-md truncate">${escapeHTML(item.description || '-')}</td>
+            <td class="py-3.5 px-4 text-right font-bold text-gray-900 dark:text-white whitespace-nowrap">R$ ${formatMoney(item.value)}</td>
             <td class="py-3.5 px-4 text-center no-print whitespace-nowrap">
               <div class="flex items-center justify-center gap-2">
-                <button onclick="editEntry('${item.id}')" class="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition" title="Editar">
-                  <i class="fa-solid fa-pen-to-square"></i>
-                </button>
-                <button onclick="deleteEntry('${item.id}')" class="p-1.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition" title="Excluir">
-                  <i class="fa-solid fa-trash-can"></i>
-                </button>
+                <button onclick="editEntry('${item.id}')" class="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 rounded-lg transition" title="Editar"><i class="fa-solid fa-pen-to-square"></i></button>
+                <button onclick="deleteEntry('${item.id}')" class="p-1.5 text-red-600 dark:text-red-400 hover:bg-red-50 rounded-lg transition" title="Excluir"><i class="fa-solid fa-trash-can"></i></button>
               </div>
             </td>
           `;
@@ -504,10 +473,9 @@
       const searchVal = document.getElementById('searchInput').value.toLowerCase().trim();
       const filtered = entries.filter(item => {
         const matchesCategory = (currentFilterCategory === 'all') || (item.category === currentFilterCategory);
-        const matchesSearch = item.description.toLowerCase().includes(searchVal) ||
+        const matchesSearch = (item.description || '').toLowerCase().includes(searchVal) ||
                               item.date.includes(searchVal) ||
                               item.value.toFixed(2).replace('.', ',').includes(searchVal);
-
         return matchesCategory && matchesSearch;
       });
 
@@ -515,22 +483,15 @@
       return filtered;
     }
 
-    /* -------------------------------------------------------------------------- */
-    /* GERAÇÃO DO RELATÓRIO LIMPO PARA VISUALIZAÇÃO E IMPRESSÃO                  */
-    /* -------------------------------------------------------------------------- */
-
     function generateCleanReportHTML(dataList) {
       const total = dataList.reduce((acc, curr) => acc + curr.value, 0);
+      const todayStr = new Date().toLocaleDateString('pt-BR');
+      const catInfo = CATEGORIES[currentFilterCategory];
+      const filterLabel = currentFilterCategory === 'all' ? 'Todas as Categorias' : catInfo.name;
 
       let rowsHTML = '';
       if (dataList.length === 0) {
-        rowsHTML = `
-          <tr>
-            <td colspan="4" style="padding: 12px; text-align: center; color: #666; border-bottom: 1px solid #ddd;">
-              Nenhum lançamento encontrado.
-            </td>
-          </tr>
-        `;
+        rowsHTML = `<tr><td colspan="4" style="padding: 12px; text-align: center; color: #666;">Nenhum lançamento encontrado.</td></tr>`;
       } else {
         dataList.forEach(item => {
           const categoryObj = CATEGORIES[item.category] || { name: 'Outros' };
@@ -547,6 +508,13 @@
 
       return `
         <div style="font-family: Arial, sans-serif; color: #111827; width: 100%;">
+          <div style="border-bottom: 2px solid #111827; padding-bottom: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end;">
+            <div>
+              <h1 style="font-size: 20px; font-weight: bold; margin: 0; text-transform: uppercase;">Relatório de Lançamentos</h1>
+              <p style="font-size: 12px; color: #4b5563; margin: 4px 0 0 0;">Filtro: <strong>${filterLabel}</strong></p>
+            </div>
+            <div style="text-align: right; font-size: 12px; color: #6b7280;">Emissão: <strong>${todayStr}</strong></div>
+          </div>
           <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
             <thead>
               <tr style="background-color: #f3f4f6; border-bottom: 2px solid #d1d5db; font-size: 11px; text-transform: uppercase; color: #374151;">
@@ -556,9 +524,7 @@
                 <th style="padding: 10px 12px; text-align: right;">VALOR (R$)</th>
               </tr>
             </thead>
-            <tbody>
-              ${rowsHTML}
-            </tbody>
+            <tbody>${rowsHTML}</tbody>
             <tfoot>
               <tr style="border-top: 2px solid #111827; font-size: 14px; font-weight: bold; background-color: #f9fafb;">
                 <td colspan="3" style="padding: 12px; text-align: right; text-transform: uppercase;">Valor Total:</td>
@@ -571,14 +537,11 @@
     }
 
     function buildPrintAreaHTML(filteredData) {
-      const printArea = document.getElementById('printArea');
-      printArea.innerHTML = generateCleanReportHTML(filteredData);
+      document.getElementById('printArea').innerHTML = generateCleanReportHTML(filteredData);
     }
 
     function openReportPreview() {
-      const filteredData = getFilteredData();
-      const modalContent = document.getElementById('modalReportContent');
-      modalContent.innerHTML = generateCleanReportHTML(filteredData);
+      document.getElementById('modalReportContent').innerHTML = generateCleanReportHTML(getFilteredData());
       document.getElementById('reportPreviewModal').classList.remove('hidden');
     }
 
@@ -591,55 +554,35 @@
       window.print();
     }
 
-    // Atualização dos indicadores e resumos financeiros
     function updateSummaryCards(filteredList) {
       const total = filteredList.reduce((acc, curr) => acc + curr.value, 0);
-      
-      // Contagem de dias únicos para média/total por dia
       const uniqueDays = new Set(filteredList.map(item => item.date)).size;
       const dailyAverage = uniqueDays > 0 ? (total / uniqueDays) : 0;
 
       document.getElementById('totalValue').innerText = `R$ ${formatMoney(total)}`;
-      document.getElementById('totalCountText').innerText = `${filteredList.length} lançamento(s) visualizado(s)`;
-
+      document.getElementById('totalCountText').innerText = `${filteredList.length} lançamento(s)`;
       document.getElementById('dailyValue').innerText = `R$ ${formatMoney(dailyAverage)}`;
-      document.getElementById('dailyCountText').innerText = `Média por dia (${uniqueDays} dia(s) com lançamentos)`;
+      document.getElementById('dailyCountText').innerText = `Baseado em ${uniqueDays} dia(s)`;
 
-      // Atualiza nome do Filtro Ativo
       const activeCat = CATEGORIES[currentFilterCategory];
-      document.getElementById('activeFilterName').innerText = currentFilterCategory === 'all' 
-        ? '📁 Todos os Lançamentos' 
-        : `${activeCat.emoji} ${activeCat.name}`;
+      document.getElementById('activeFilterName').innerText = currentFilterCategory === 'all' ? '📁 Todos' : `${activeCat.emoji} ${activeCat.name}`;
     }
-
-    /* -------------------------------------------------------------------------- */
-    /* INTERAÇÕES DE FILTRO E ABAS                                                */
-    /* -------------------------------------------------------------------------- */
 
     function setCategoryFilter(catCode) {
       currentFilterCategory = catCode;
-      
-      // Atualiza estilo dos botões das abas
       document.querySelectorAll('.cat-btn').forEach(btn => {
         if (btn.getAttribute('data-cat') === catCode) {
           btn.className = 'cat-btn px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap bg-brand-600 text-white shadow-sm transition';
         } else {
-          btn.className = 'cat-btn px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition';
+          btn.className = 'cat-btn px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 transition';
         }
       });
-
       renderData();
     }
-
-    /* -------------------------------------------------------------------------- */
-    /* GERENCIAMENTO DO MODAL DE CADASTRO E EDIÇÃO                                */
-    /* -------------------------------------------------------------------------- */
 
     function openModal(editId = null) {
       const modal = document.getElementById('entryModal');
       const form = document.getElementById('entryForm');
-      const modalTitle = document.getElementById('modalTitle');
-
       form.reset();
       document.getElementById('entryId').value = '';
 
@@ -650,15 +593,11 @@
           document.getElementById('inputDate').value = item.date;
           document.getElementById('inputCategory').value = item.category;
           document.getElementById('inputValue').value = formatMoney(item.value);
-          document.getElementById('inputDescription').value = item.description;
-          modalTitle.innerHTML = `<i class="fa-solid fa-pen-to-square text-brand-600"></i><span>Editar Lançamento</span>`;
+          document.getElementById('inputDescription').value = item.description || '';
         }
       } else {
-        // Padrão: Data atual formatada no campo
         document.getElementById('inputDate').value = getTodayFormatted();
-        modalTitle.innerHTML = `<i class="fa-solid fa-plus text-brand-600"></i><span>Novo Lançamento</span>`;
       }
-
       modal.classList.remove('hidden');
     }
 
@@ -666,110 +605,29 @@
       document.getElementById('entryModal').classList.add('hidden');
     }
 
-    function handleFormSubmit(e) {
-      e.preventDefault();
-
-      const id = document.getElementById('entryId').value;
-      const dateRaw = document.getElementById('inputDate').value.trim();
-      const category = document.getElementById('inputCategory').value;
-      const valueRaw = document.getElementById('inputValue').value;
-      const description = document.getElementById('inputDescription').value.trim();
-
-      // Formatação e tratamento flexível de datas (DD/MM/AA -> DD/MM/AAAA)
-      const formattedDate = parseAndNormalizeDate(dateRaw);
-      if (!formattedDate) {
-        showToast('Por favor, informe uma data válida (ex: 15/10/26 ou 15/10/2026).', 'error');
-        return;
-      }
-
-      // Converte valor monetário
-      const numericValue = parseCurrency(valueRaw);
-      if (isNaN(numericValue) || numericValue <= 0) {
-        showToast('Informe um valor monetário válido maior que zero.', 'error');
-        return;
-      }
-
-      if (id) {
-        // Atualizar
-        const index = entries.findIndex(e => e.id === id);
-        if (index !== -1) {
-          entries[index] = { id, date: formattedDate, category, value: numericValue, description };
-          showToast('Lançamento atualizado com sucesso!');
-        }
-      } else {
-        // Criar Novo
-        const newEntry = {
-          id: Date.now().toString(),
-          date: formattedDate,
-          category,
-          value: numericValue,
-          description
-        };
-        entries.push(newEntry);
-        showToast('Lançamento cadastrado com sucesso!');
-      }
-
-      saveEntriesToStorage();
-      renderData();
-      closeModal();
-    }
-
     function editEntry(id) {
       openModal(id);
     }
 
-    function deleteEntry(id) {
-      // Substituído alert/confirm por exclusão direta com notificação flexível de recuperação
-      const index = entries.findIndex(e => e.id === id);
-      if (index !== -1) {
-        entries.splice(index, 1);
-        saveEntriesToStorage();
-        renderData();
-        showToast('Lançamento removido com sucesso.');
-      }
-    }
-
-    /* -------------------------------------------------------------------------- */
-    /* MÁSCARAS, PARSERS E FORMATADORES DE DATA E MOEDA                           */
-    /* -------------------------------------------------------------------------- */
-
     function getTodayFormatted() {
       const today = new Date();
-      const dd = String(today.getDate()).padStart(2, '0');
-      const mm = String(today.getMonth() + 1).padStart(2, '0');
-      const yyyy = today.getFullYear();
-      return `${dd}/${mm}/${yyyy}`;
+      return `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}/${today.getFullYear()}`;
     }
 
-    // Aceita DD/MM/AA e DD/MM/AAAA
     function parseAndNormalizeDate(dateStr) {
       const parts = dateStr.split('/');
       if (parts.length !== 3) return null;
-
       let day = parseInt(parts[0], 10);
       let month = parseInt(parts[1], 10);
       let year = parseInt(parts[2], 10);
-
-      if (isNaN(day) || isNaN(month) || isNaN(year)) return null;
-
-      // Trata ano de 2 dígitos (ex: 26 -> 2026)
-      if (year < 100) {
-        year += 2000;
-      }
-
+      if (year < 100) year += 2000;
       if (month < 1 || month > 12 || day < 1 || day > 31) return null;
-
-      const dd = String(day).padStart(2, '0');
-      const mm = String(month).padStart(2, '0');
-      return `${dd}/${mm}/${year}`;
+      return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
     }
 
     function parseBrazilianDate(dateStr) {
       const parts = dateStr.split('/');
-      if (parts.length === 3) {
-        return new Date(parts[2], parts[1] - 1, parts[0]).getTime();
-      }
-      return 0;
+      return parts.length === 3 ? new Date(parts[2], parts[1] - 1, parts[0]).getTime() : 0;
     }
 
     function syncNativeDateToText(input) {
@@ -781,15 +639,13 @@
     function formatCurrencyInput(input) {
       let value = input.value.replace(/\D/g, '');
       value = (value / 100).toFixed(2) + '';
-      value = value.replace('.', ',');
-      value = value.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+      value = value.replace('.', ',').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
       input.value = value;
     }
 
     function parseCurrency(valStr) {
       if (typeof valStr === 'number') return valStr;
-      let clean = valStr.replace(/\./g, '').replace(',', '.');
-      return parseFloat(clean);
+      return parseFloat(valStr.replace(/\./g, '').replace(',', '.'));
     }
 
     function formatMoney(amount) {
@@ -797,71 +653,35 @@
     }
 
     function escapeHTML(str) {
-      return str.replace(/[&<>'"]/g, 
-        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-      );
+      return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
     }
-
-    /* -------------------------------------------------------------------------- */
-    /* GERENCIAMENTO DE TEMA (CLARO / ESCURO)                                     */
-    /* -------------------------------------------------------------------------- */
 
     function toggleTheme() {
       const html = document.documentElement;
       const isDark = html.classList.contains('dark');
-
-      if (isDark) {
-        html.classList.remove('dark');
-        localStorage.setItem('juros_theme', 'light');
-      } else {
-        html.classList.add('dark');
-        localStorage.setItem('juros_theme', 'dark');
-      }
+      html.classList.toggle('dark', !isDark);
+      localStorage.setItem('juros_theme', isDark ? 'light' : 'dark');
       updateThemeIcon();
     }
 
     function loadTheme() {
       const savedTheme = localStorage.getItem('juros_theme') || 'dark';
-      if (savedTheme === 'dark') {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
+      document.documentElement.classList.toggle('dark', savedTheme === 'dark');
       updateThemeIcon();
     }
 
     function updateThemeIcon() {
       const themeIcon = document.getElementById('themeIcon');
       const isDark = document.documentElement.classList.contains('dark');
-      if (isDark) {
-        themeIcon.className = 'fa-solid fa-sun text-yellow-400';
-      } else {
-        themeIcon.className = 'fa-solid fa-moon text-gray-600';
-      }
+      themeIcon.className = isDark ? 'fa-solid fa-sun text-yellow-400' : 'fa-solid fa-moon text-gray-600';
     }
-
-    /* -------------------------------------------------------------------------- */
-    /* NOTIFICAÇÃO TOAST                                                          */
-    /* -------------------------------------------------------------------------- */
 
     function showToast(message, type = 'success') {
       const toast = document.getElementById('toast');
-      const toastMessage = document.getElementById('toastMessage');
-      const toastIcon = document.getElementById('toastIcon');
-
-      toastMessage.innerText = message;
-
-      if (type === 'error') {
-        toastIcon.className = 'fa-solid fa-circle-exclamation text-red-500';
-      } else {
-        toastIcon.className = 'fa-solid fa-circle-check text-green-400 dark:text-green-600';
-      }
-
+      document.getElementById('toastMessage').innerText = message;
+      document.getElementById('toastIcon').className = type === 'error' ? 'fa-solid fa-circle-exclamation text-red-500' : 'fa-solid fa-circle-check text-green-400';
       toast.classList.remove('translate-y-20', 'opacity-0');
-
-      setTimeout(() => {
-        toast.classList.add('translate-y-20', 'opacity-0');
-      }, 3000);
+      setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
     }
   </script>
 </body>
