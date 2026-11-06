@@ -335,7 +335,7 @@
     // Carregar dados da nuvem do Neon
     async function loadEntriesFromNeon() {
       try {
-        const data = await sql`SELECT * FROM lancamentos`;
+        const data = await sql('SELECT * FROM lancamentos');
         entries = data || [];
       } catch (err) {
         console.error('Erro ao buscar do Neon:', err);
@@ -369,19 +369,19 @@
       try {
         if (id) {
           // Atualizar no Neon
-          await sql`UPDATE lancamentos SET date = ${formattedDate}, category = ${category}, value = ${numericValue}, description = ${description} WHERE id = ${id}`;
+          await sql('UPDATE lancamentos SET date = $1, category = $2, value = $3, description = $4 WHERE id = $5', [formattedDate, category, numericValue, description, id]);
           showToast('Lançamento atualizado com sucesso!');
         } else {
           // Inserir Novo no Neon
           const newId = Date.now().toString();
-          await sql`INSERT INTO lancamentos (id, date, category, value, description) VALUES (${newId}, ${formattedDate}, ${category}, ${numericValue}, ${description})`;
+          await sql('INSERT INTO lancamentos (id, date, category, value, description) VALUES ($1, $2, $3, $4, $5)', [newId, formattedDate, category, numericValue, description]);
           showToast('Lançamento cadastrado na nuvem!');
         }
         closeModal();
         loadEntriesFromNeon();
       } catch (err) {
         showToast('Erro ao salvar no Neon.', 'error');
-        console.error(err);
+        console.error('Detalhes do erro:', err);
       }
     }
 
@@ -389,7 +389,7 @@
       if (!confirm('Deseja realmente excluir este lançamento?')) return;
 
       try {
-        await sql`DELETE FROM lancamentos WHERE id = ${id}`;
+        await sql('DELETE FROM lancamentos WHERE id = $1', [id]);
         showToast('Lançamento removido com sucesso.');
         loadEntriesFromNeon();
       } catch (err) {
