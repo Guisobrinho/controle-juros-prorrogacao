@@ -6,8 +6,8 @@
   <title>Lançamentos - Juros & Prorrogação</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Supabase JS Client -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Driver HTTP Serverless do Neon Postgres -->
+  <script src="https://unpkg.com/@neondatabase/serverless@latest/lib/index.js"></script>
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- Google Fonts: Inter -->
@@ -306,16 +306,11 @@
     </div>
   </div>
 
-  <!-- SCRIPT INTEGRADO COM SUPABASE -->
+  <!-- SCRIPT INTEGRADO COM NEON POSTGRES -->
   <script>
-    // ==========================================
-    // ⚙️ INSIRA A URL DO SEU PROJETO ABAIXO:
-    // ==========================================
-    const SUPABASE_URL = 'https://yuabgnwfgowfgyfxmxzv.supabase.co'; // Ex: https://xxxx.supabase.co
-    const SUPABASE_ANON_KEY = 'sb_publishable_QQrh_m6-mxP4JxzzYMrQZQ_G-ERQzxR';
-    // ==========================================
-
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const connectionString = window.env?.DATABASE_URL || 'postgresql://neondb_owner:npg_P5WEog1mKXOA@ep-wandering-flower-b6oz17i2-pooler.c-2.sa-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
+    const { neon } = window.neon;
+    const sql = neon(connectionString);
 
     const CATEGORIES = {
       '01': { name: '01 Impostos', emoji: '🏛️' },
@@ -329,7 +324,7 @@
 
     window.onload = function() {
       loadTheme();
-      loadEntriesFromSupabase();
+      loadEntriesFromNeon();
       setCurrentDateInPrint();
     };
 
@@ -337,18 +332,15 @@
       document.getElementById('printDate').innerText = new Date().toLocaleDateString('pt-BR');
     }
 
-    // Carregar dados da nuvem do Supabase
-    async function loadEntriesFromSupabase() {
-      const { data, error } = await supabaseClient
-        .from('lancamentos')
-        .select('*');
-
-      if (error) {
-        console.error('Erro ao buscar do Supabase:', error);
+    // Carregar dados da nuvem do Neon
+    async function loadEntriesFromNeon() {
+      try {
+        const data = await sql`SELECT * FROM lancamentos`;
+        entries = data || [];
+      } catch (err) {
+        console.error('Erro ao buscar do Neon:', err);
         showToast('Erro ao carregar dados da nuvem.', 'error');
         entries = [];
-      } else {
-        entries = data || [];
       }
       renderData();
     }
@@ -374,57 +366,35 @@
         return;
       }
 
-      if (id) {
-        // Atualizar no Supabase
-        const { error } = await supabaseClient
-          .from('lancamentos')
-          .update({ date: formattedDate, category, value: numericValue, description })
-          .eq('id', id);
-
-        if (error) {
-          showToast('Erro ao atualizar na nuvem.', 'error');
-        } else {
+      try {
+        if (id) {
+          // Atualizar no Neon
+          await sql`UPDATE lancamentos SET date = ${formattedDate}, category = ${category}, value = ${numericValue}, description = ${description} WHERE id = ${id}`;
           showToast('Lançamento atualizado com sucesso!');
-        }
-      } else {
-        // Inserir Novo no Supabase
-        const newRecord = {
-          id: Date.now().toString(),
-          date: formattedDate,
-          category,
-          value: numericValue,
-          description
-        };
-
-        const { error } = await supabaseClient
-          .from('lancamentos')
-          .insert([newRecord]);
-
-        if (error) {
-          showToast('Erro ao salvar no Supabase.', 'error');
-          console.error(error);
         } else {
+          // Inserir Novo no Neon
+          const newId = Date.now().toString();
+          await sql`INSERT INTO lancamentos (id, date, category, value, description) VALUES (${newId}, ${formattedDate}, ${category}, ${numericValue}, ${description})`;
           showToast('Lançamento cadastrado na nuvem!');
         }
+        closeModal();
+        loadEntriesFromNeon();
+      } catch (err) {
+        showToast('Erro ao salvar no Neon.', 'error');
+        console.error(err);
       }
-
-      closeModal();
-      loadEntriesFromSupabase();
     }
 
     async function deleteEntry(id) {
       if (!confirm('Deseja realmente excluir este lançamento?')) return;
 
-      const { error } = await supabaseClient
-        .from('lancamentos')
-        .delete()
-        .eq('id', id);
-
-      if (error) {
-        showToast('Erro ao excluir registro.', 'error');
-      } else {
+      try {
+        await sql`DELETE FROM lancamentos WHERE id = ${id}`;
         showToast('Lançamento removido com sucesso.');
-        loadEntriesFromSupabase();
+        loadEntriesFromNeon();
+      } catch (err) {
+        showToast('Erro ao excluir registro.', 'error');
+        console.error(err);
       }
     }
 
@@ -453,7 +423,7 @@
               </span>
             </td>
             <td class="py-3.5 px-4 text-gray-600 dark:text-gray-300 max-w-xs sm:max-w-md truncate">${escapeHTML(item.description || '-')}</td>
-            <td class="py-3.5 px-4 text-right font-bold text-gray-900 dark:text-white whitespace-nowrap">R$ ${formatMoney(item.value)}</td>
+            <td class="py-3.5 px-4 text-right font-bold text-gray-900 dark:text-white whitespace-nowrap">R$ ${formatMoney(Number(item.value))}</td>
             <td class="py-3.5 px-4 text-center no-print whitespace-nowrap">
               <div class="flex items-center justify-center gap-2">
                 <button onclick="editEntry('${item.id}')" class="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 rounded-lg transition" title="Editar"><i class="fa-solid fa-pen-to-square"></i></button>
@@ -473,9 +443,10 @@
       const searchVal = document.getElementById('searchInput').value.toLowerCase().trim();
       const filtered = entries.filter(item => {
         const matchesCategory = (currentFilterCategory === 'all') || (item.category === currentFilterCategory);
+        const numVal = Number(item.value) || 0;
         const matchesSearch = (item.description || '').toLowerCase().includes(searchVal) ||
                               item.date.includes(searchVal) ||
-                              item.value.toFixed(2).replace('.', ',').includes(searchVal);
+                              numVal.toFixed(2).replace('.', ',').includes(searchVal);
         return matchesCategory && matchesSearch;
       });
 
@@ -484,7 +455,7 @@
     }
 
     function generateCleanReportHTML(dataList) {
-      const total = dataList.reduce((acc, curr) => acc + curr.value, 0);
+      const total = dataList.reduce((acc, curr) => acc + (Number(curr.value) || 0), 0);
       const todayStr = new Date().toLocaleDateString('pt-BR');
       const catInfo = CATEGORIES[currentFilterCategory];
       const filterLabel = currentFilterCategory === 'all' ? 'Todas as Categorias' : catInfo.name;
@@ -500,7 +471,7 @@
               <td style="padding: 10px 12px; font-size: 13px; text-align: left; white-space: nowrap;">${item.date}</td>
               <td style="padding: 10px 12px; font-size: 13px; text-align: left; white-space: nowrap;">${categoryObj.name}</td>
               <td style="padding: 10px 12px; font-size: 13px; text-align: left;">${escapeHTML(item.description || '-')}</td>
-              <td style="padding: 10px 12px; font-size: 13px; text-align: right; font-weight: bold; white-space: nowrap;">R$ ${formatMoney(item.value)}</td>
+              <td style="padding: 10px 12px; font-size: 13px; text-align: right; font-weight: bold; white-space: nowrap;">R$ ${formatMoney(Number(item.value))}</td>
             </tr>
           `;
         });
@@ -555,7 +526,7 @@
     }
 
     function updateSummaryCards(filteredList) {
-      const total = filteredList.reduce((acc, curr) => acc + curr.value, 0);
+      const total = filteredList.reduce((acc, curr) => acc + (Number(curr.value) || 0), 0);
       const uniqueDays = new Set(filteredList.map(item => item.date)).size;
       const dailyAverage = uniqueDays > 0 ? (total / uniqueDays) : 0;
 
@@ -592,7 +563,7 @@
           document.getElementById('entryId').value = item.id;
           document.getElementById('inputDate').value = item.date;
           document.getElementById('inputCategory').value = item.category;
-          document.getElementById('inputValue').value = formatMoney(item.value);
+          document.getElementById('inputValue').value = formatMoney(Number(item.value));
           document.getElementById('inputDescription').value = item.description || '';
         }
       } else {
