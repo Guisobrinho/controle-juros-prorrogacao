@@ -308,9 +308,8 @@
 
   <!-- SCRIPT INTEGRADO COM NEON POSTGRES -->
   <script>
-    const connectionString = window.env?.DATABASE_URL || 'postgresql://neondb_owner:npg_P5WEog1mKXOA@ep-wandering-flower-b6oz17i2-pooler.c-2.sa-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
-    const { neon } = window.neon;
-    const sql = neon(connectionString);
+const connectionString = 'postgresql://neondb_owner:npg_7dAJfQNs3zCt@ep-crimson-king-b6938pba-pooler.c-2.sa-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
+const sql = neon.neon(connectionString);
 
     const CATEGORIES = {
       '01': { name: '01 Impostos', emoji: '🏛️' },
