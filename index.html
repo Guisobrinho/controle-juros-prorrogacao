@@ -6,8 +6,8 @@
   <title>Lançamentos - Juros & Prorrogação</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Driver HTTP Serverless do Neon Postgres -->
-<script src="https://cdn.jsdelivr.net/npm/@neondatabase/serverless@latest/index.min.js"></script>
+  <!-- Driver HTTP Serverless do Neon Postgres (Versão UMD Correta para Navegador) -->
+  <script src="https://unpkg.com/@neondatabase/serverless@0.6.0/dist/index.iife.min.js"></script>
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- Google Fonts: Inter -->
@@ -308,8 +308,8 @@
 
   <!-- SCRIPT INTEGRADO COM NEON POSTGRES -->
   <script>
-const connectionString = 'postgresql://neondb_owner:npg_7dAJfQNs3zCt@ep-crimson-king-b6938pba-pooler.c-2.sa-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
-const sql = neon.neon(connectionString);
+    const connectionString = 'postgresql://neondb_owner:npg_7dAJfQNs3zCt@ep-crimson-king-b6938pba-pooler.c-2.sa-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
+    const sql = neon.neon(connectionString);
 
     const CATEGORIES = {
       '01': { name: '01 Impostos', emoji: '🏛️' },
@@ -334,7 +334,7 @@ const sql = neon.neon(connectionString);
     // Carregar dados da nuvem do Neon
     async function loadEntriesFromNeon() {
       try {
-        const data = await sql('SELECT * FROM lancamentos');
+        const data = await sql`SELECT * FROM lancamentos`;
         entries = data || [];
       } catch (err) {
         console.error('Erro ao buscar do Neon:', err);
@@ -368,12 +368,12 @@ const sql = neon.neon(connectionString);
       try {
         if (id) {
           // Atualizar no Neon
-          await sql('UPDATE lancamentos SET date = $1, category = $2, value = $3, description = $4 WHERE id = $5', [formattedDate, category, numericValue, description, id]);
+          await sql`UPDATE lancamentos SET date = ${formattedDate}, category = ${category}, value = ${numericValue}, description = ${description} WHERE id = ${id}`;
           showToast('Lançamento atualizado com sucesso!');
         } else {
           // Inserir Novo no Neon
           const newId = Date.now().toString();
-          await sql('INSERT INTO lancamentos (id, date, category, value, description) VALUES ($1, $2, $3, $4, $5)', [newId, formattedDate, category, numericValue, description]);
+          await sql`INSERT INTO lancamentos (id, date, category, value, description) VALUES (${newId}, ${formattedDate}, ${category}, ${numericValue}, ${description})`;
           showToast('Lançamento cadastrado na nuvem!');
         }
         closeModal();
@@ -388,7 +388,7 @@ const sql = neon.neon(connectionString);
       if (!confirm('Deseja realmente excluir este lançamento?')) return;
 
       try {
-        await sql('DELETE FROM lancamentos WHERE id = $1', [id]);
+        await sql`DELETE FROM lancamentos WHERE id = ${id}`;
         showToast('Lançamento removido com sucesso.');
         loadEntriesFromNeon();
       } catch (err) {
